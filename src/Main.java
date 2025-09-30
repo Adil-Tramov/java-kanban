@@ -21,7 +21,6 @@ public class Main {
         var sub1 = new Subtask("Собрать данные", "Из базы", Status.NEW, epic1.getId());
         var sub2 = new Subtask("Построить графики", "В Excel", Status.NEW, epic1.getId());
         var sub3 = new Subtask("Написать выводы", "По анализу", Status.NEW, epic1.getId());
-
         taskManager.createSubtask(sub1);
         taskManager.createSubtask(sub2);
         taskManager.createSubtask(sub3);
