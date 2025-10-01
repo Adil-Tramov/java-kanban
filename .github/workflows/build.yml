@@ -23,6 +23,7 @@ jobs:
     - name: Compile Java code
       run: |
         mkdir -p out
-        find . -name "*.java" > sources.txt
+        find src -name "*.java" > sources.txt
         javac -d out @sources.txt
         echo "✅ Build successful"
+
