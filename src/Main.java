@@ -1,3 +1,5 @@
+package ru.yandex.practicum.javakanban;
+
 import managers.InMemoryTaskManager;
 import tasks.Task;
 import tasks.Subtask;
