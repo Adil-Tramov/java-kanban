@@ -1,5 +1,8 @@
 import managers.InMemoryTaskManager;
-import tasks.*;
+import tasks.Task;
+import tasks.Subtask;
+import tasks.Epic;
+import tasks.Status;
 
 public class Main {
     public static void main(String[] args) {
@@ -14,7 +17,7 @@ public class Main {
         Subtask s1 = new Subtask("Sub 1", "part 1", Status.NEW, epic.getId());
         manager.createSubtask(s1);
 
-        // Просматривание задач (historyManager.add будет выполнен в getById)
+        // Просмотр задач (historyManager.add будет выполнен в getById)
         manager.getTaskById(t1.getId());
         manager.getEpicById(epic.getId());
         manager.getSubtaskById(s1.getId());
