@@ -10,7 +10,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         Node next;
         Node prev;
 
-        public Node(Task task) {
+        Node(Task task) {
             this.task = task;
         }
     }
@@ -19,52 +19,55 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node tail;
     private final Map<Integer, Node> historyMap = new HashMap<>();
 
-    private void linkLast(Task task) {
-        Node newNode = new Node(task);
-        if (tail == null) {
-            head = newNode;
-            tail = newNode;
-        } else {
-            tail.next = newNode;
-            newNode.prev = tail;
-            tail = newNode;
+    @Override
+    public void add(Task task) {
+        if (task == null) return;
+        int id = task.getId();
+        // если уже есть — удаляем старый узел (O(1))
+        if (historyMap.containsKey(id)) {
+            removeNode(historyMap.get(id));
         }
-        historyMap.put(task.getId(), newNode);
+        // добавляем новый узел в конец
+        Node node = linkLast(task);
+        historyMap.put(id, node);
+    }
+
+    private Node linkLast(Task task) {
+        Node node = new Node(task);
+        if (tail == null) {
+            head = tail = node;
+        } else {
+            tail.next = node;
+            node.prev = tail;
+            tail = node;
+        }
+        return node;
     }
 
     private void removeNode(Node node) {
         if (node == null) return;
+        Node prev = node.prev;
+        Node next = node.next;
 
-        if (node.prev != null) {
-            node.prev.next = node.next;
+        if (prev != null) {
+            prev.next = next;
         } else {
-            head = node.next;
+            head = next;
         }
 
-        if (node.next != null) {
-            node.next.prev = node.prev;
+        if (next != null) {
+            next.prev = prev;
         } else {
-            tail = node.prev;
+            tail = prev;
         }
 
         historyMap.remove(node.task.getId());
     }
 
     @Override
-    public void add(Task task) {
-        if (task == null || task.getId() == null) return;
-
-        if (historyMap.containsKey(task.getId())) {
-            removeNode(historyMap.get(task.getId()));
-        }
-        linkLast(task);
-    }
-
-    @Override
     public void remove(int id) {
-        if (historyMap.containsKey(id)) {
-            removeNode(historyMap.get(id));
-        }
+        Node node = historyMap.get(id);
+        removeNode(node);
     }
 
     @Override

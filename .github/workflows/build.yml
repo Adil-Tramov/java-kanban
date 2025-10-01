@@ -1,3 +1,21 @@
+name: Java CI
+
+on:
+  push:
+    branches: [ "main", "sprint_6-solution" ]
+  pull_request:
+    branches: [ "main", "sprint_6-solution" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
@@ -5,9 +23,6 @@
     - name: Compile Java code
       run: |
         mkdir -p out
-        find src -name "*.java" > sources.txt
+        find . -name "*.java" > sources.txt
         javac -d out @sources.txt
         echo "✅ Build successful"
-
-
-
