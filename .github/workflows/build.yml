@@ -1,0 +1,13 @@
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Compile Java code
+      run: |
+        mkdir -p out
+        find src -name "*.java" > sources.txt
+        javac -d out @sources.txt
+        echo "✅ Build successful"
+
+
+
