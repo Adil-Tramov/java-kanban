@@ -1,9 +1,3 @@
-import managers.InMemoryTaskManager;
-import tasks.Task;
-import tasks.Subtask;
-import tasks.Epic;
-import tasks.Status;
-
 public class Main {
     public static void main(String[] args) {
         InMemoryTaskManager taskManager = new InMemoryTaskManager();

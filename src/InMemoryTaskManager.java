@@ -1,8 +1,7 @@
-package managers;
-
-import tasks.*;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class InMemoryTaskManager {
     private final Map<Integer, Task> tasks = new HashMap<>();
