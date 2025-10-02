@@ -1,10 +1,7 @@
 package managers;
 
 import tasks.Task;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
@@ -26,9 +23,11 @@ public class InMemoryHistoryManager implements HistoryManager {
     public void add(Task task) {
         if (task == null) return;
         int id = task.getId();
+        // если уже есть — удаляем старый узел (O(1))
         if (historyMap.containsKey(id)) {
             removeNode(historyMap.get(id));
         }
+        // добавляем новый узел в конец
         Node node = linkLast(task);
         historyMap.put(id, node);
     }
