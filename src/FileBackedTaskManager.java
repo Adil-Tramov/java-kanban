@@ -138,7 +138,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private Task fromString(String line) {
-        String[] parts = line.split(",");
+        String[] parts = line.split(",", 6); // ← ВАЖНО: ограничиваем количество частей
+
+        if (parts.length < 6) {
+            throw new IllegalArgumentException("Неверный формат строки: " + line);
+        }
+
         int id = Integer.parseInt(parts[0]);
         TaskType type = TaskType.valueOf(parts[1]);
         String name = parts[2];
