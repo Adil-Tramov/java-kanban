@@ -2,26 +2,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
-    private final List<Integer> subtaskIds;
+    private final List<Integer> subtasksIds = new ArrayList<>();
 
     public Epic(String name, String description) {
-        super(name, description, TaskStatus.NEW);
-        this.subtaskIds = new ArrayList<>();
+        super(name, description, Status.NEW);
     }
 
-    public List<Integer> getSubtaskIds() {
-        return subtaskIds;
+    public List<Integer> getSubtasksIds() {
+        return subtasksIds;
     }
 
-    public void addSubtaskId(int subtaskId) {
-        subtaskIds.add(subtaskId);
+    public void addSubtaskId(int id) {
+        subtasksIds.add(id);
     }
 
-    public void removeSubtaskId(int subtaskId) {
-        subtaskIds.remove((Integer) subtaskId);
+    public void removeSubtaskId(int id) {
+        subtasksIds.remove(Integer.valueOf(id));
     }
 
-    public void clearSubtaskIds() {
-        subtaskIds.clear();
+    public void clearSubtasks() {
+        subtasksIds.clear();
+    }
+
+    @Override
+    public String toString() {
+        return "Epic{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", status=" + status +
+                ", subtasksIds=" + subtasksIds +
+                '}';
     }
 }
