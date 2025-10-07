@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,5 +40,11 @@ public class Main {
         manager.createTask(task2);
 
         System.out.println("Пересекается ли task2 с другими? " + manager.isTaskCrossed(task2));
+=======
+public class Main {
+
+    public static void main(String[] args) {
+        System.out.println("Поехали!");
+>>>>>>> upstream/main
     }
 }

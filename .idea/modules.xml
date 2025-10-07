@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+<<<<<<< HEAD
       <module fileurl="file://$PROJECT_DIR$/sprint 8.iml" filepath="$PROJECT_DIR$/sprint 8.iml" />
+=======
+      <module fileurl="file://$PROJECT_DIR$/java-kanban.iml" filepath="$PROJECT_DIR$/java-kanban.iml" />
+>>>>>>> upstream/main
     </modules>
   </component>
 </project>
