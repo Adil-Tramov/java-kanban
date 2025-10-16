@@ -74,14 +74,14 @@ public abstract class Task {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || !(o instanceof Task)) return false;
         Task task = (Task) o;
-        return id == task.id; // Сравниваем ТОЛЬКО по ID
+        return id == task.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id); // Хэш только от ID
+        return Objects.hash(id);
     }
 
     @Override
