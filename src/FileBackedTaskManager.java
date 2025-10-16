@@ -23,7 +23,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             for (int i = 1; i < lines.size(); i++) {
                 String line = lines.get(i);
                 if (line.trim().isEmpty()) continue;
-                String[] parts = line.split(",", -1); // -1 чтобы сохранить пустые поля после последней запятой
+                String[] parts = line.split(",", -1);
                 if (parts.length < 8) continue;
 
                 int id = Integer.parseInt(parts[0]);
@@ -69,7 +69,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 }
             }
 
-            // Обновляем эпики после загрузки подзадач
             for (Epic epic : epics.values()) {
                 List<Subtask> subs = getEpicSubtasks(epic.getId());
                 epic.updateTimesAndDuration(subs);
@@ -105,12 +104,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private String serializeTask(Task task, String type, int epicId) {
         String durationStr = task.getDuration() == null ? "null" : String.valueOf(task.getDuration().toMinutes());
         String startTimeStr = task.getStartTime() == null ? "null" : task.getStartTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        String epicPart = type.equals("SUBTASK") ? "," + epicId : "";
+        String epicPart = String.valueOf(epicId); // Всегда записываем как строку, даже если -1
         return task.getId() + "," + type + "," + task.getTitle() + "," + task.getStatus() + "," +
-                task.getDescription() + "," + durationStr + "," + startTimeStr + epicPart;
+                task.getDescription() + "," + durationStr + "," + startTimeStr + "," + epicPart;
     }
 
-    // Переопределяем методы, чтобы вызывать save()
     @Override
     public void createTask(Task task) {
         super.createTask(task);
