@@ -37,7 +37,7 @@ public class TaskTest {
         Task t1 = new Task("T", "D") {};
         t1.setId(1);
 
-        Task t2 = new Task("T", "D") {};
+        Task t2 = new Task("T", "D") {}; // может быть другой объект
         t2.setId(1);
 
         Task t3 = new Task("A", "B") {};

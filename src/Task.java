@@ -76,12 +76,12 @@ public abstract class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return id == task.id;
+        return id == task.id; // Сравниваем ТОЛЬКО по ID
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id); // Хэш только от ID
     }
 
     @Override
