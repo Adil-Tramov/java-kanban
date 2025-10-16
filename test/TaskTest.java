@@ -37,15 +37,15 @@ public class TaskTest {
         Task t1 = new Task("T", "D") {};
         t1.setId(1);
 
-        // t2 имеет тот же id, но может быть другим экземпляром
-        Task t2 = new Task("T", "D") {}; // тот же title/desc
+        Task t2 = new Task("T", "D") {};
         t2.setId(1);
 
         Task t3 = new Task("A", "B") {};
         t3.setId(2);
 
-        assertEquals(t1, t2, "Задачи с одинаковым ID должны быть равны");
-        assertNotEquals(t1, t3, "Задачи с разными ID не должны быть равны");
+        assertTrue(t1.equals(t2), "Задачи с одинаковым ID должны быть равны");
+        assertTrue(t2.equals(t1), "equals должен быть симметричным");
+        assertFalse(t1.equals(t3), "Задачи с разными ID не должны быть равны");
         assertEquals(t1.hashCode(), t2.hashCode(), "Хеш-коды задач с одинаковым ID должны совпадать");
     }
 }

@@ -23,7 +23,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             for (int i = 1; i < lines.size(); i++) {
                 String line = lines.get(i);
                 if (line.trim().isEmpty()) continue;
-                String[] parts = line.split(",", -1);
+                String[] parts = line.split(",", -1); // -1 чтобы сохранить пустые поля
                 if (parts.length < 8) continue;
 
                 int id = Integer.parseInt(parts[0]);
@@ -69,7 +69,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 }
             }
 
-            // Обновляем эпики после загрузки подзадач
             for (Epic epic : epics.values()) {
                 List<Subtask> subs = getEpicSubtasks(epic.getId());
                 epic.updateTimesAndDuration(subs);
