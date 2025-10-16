@@ -1,16 +1,18 @@
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File file;
 
     public FileBackedTaskManager(File file) {
         this.file = file;
-        if (file.exists()) {
+        if (file.exists() && file.length() > 0) {
             loadFromFile();
         }
     }
@@ -18,13 +20,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private void loadFromFile() {
         try {
             List<String> lines = Files.readAllLines(file.toPath());
-            if (lines.isEmpty()) return;
+            if (lines.isEmpty() || lines.size() < 2) return;
 
-            // Пропускаем заголовок
             for (int i = 1; i < lines.size(); i++) {
                 String line = lines.get(i);
                 if (line.trim().isEmpty()) continue;
-                String[] parts = line.split(",");
+                String[] parts = line.split(",", -1);
                 if (parts.length < 8) continue;
 
                 int id = Integer.parseInt(parts[0]);
@@ -32,10 +33,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 String title = parts[2];
                 TaskStatus status = TaskStatus.valueOf(parts[3]);
                 String description = parts[4];
-                long durationMinutes = "null".equals(parts[5]) ? -1 : Long.parseLong(parts[5]);
+                String durationStr = parts[5];
                 String startTimeStr = parts[6];
+                String epicIdStr = parts[7];
 
-                Duration duration = durationMinutes == -1 ? null : Duration.ofMinutes(durationMinutes);
+                Duration duration = "null".equals(durationStr) ? null : Duration.ofMinutes(Long.parseLong(durationStr));
                 LocalDateTime startTime = "null".equals(startTimeStr) ? null : LocalDateTime.parse(startTimeStr);
 
                 switch (type) {
@@ -55,7 +57,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         epics.put(id, epic);
                         break;
                     case "SUBTASK":
-                        int epicId = Integer.parseInt(parts[7]);
+                        int epicId = "null".equals(epicIdStr) ? -1 : Integer.parseInt(epicIdStr);
                         Subtask sub = new Subtask(title, description, epicId);
                         sub.setId(id);
                         sub.setStatus(status);
@@ -75,7 +77,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 epic.updateTimesAndDuration(subs);
             }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException("Ошибка загрузки из файла", e);
         }
     }
@@ -110,7 +112,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 task.getDescription() + "," + durationStr + "," + startTimeStr + epicPart;
     }
 
-    // Переопределяем методы для сохранения
     @Override
     public void createTask(Task task) {
         super.createTask(task);

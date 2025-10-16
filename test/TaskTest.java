@@ -34,12 +34,18 @@ public class TaskTest {
 
     @Test
     void testEqualsAndHashCode() {
-        Task t1 = new Task("T", "D") {}; t1.setId(1);
-        Task t2 = new Task("X", "Y") {}; t2.setId(1);
-        Task t3 = new Task("A", "B") {}; t3.setId(2);
+        Task t1 = new Task("T", "D") {};
+        t1.setId(1);
 
-        assertEquals(t1, t2);
-        assertNotEquals(t1, t3);
-        assertEquals(t1.hashCode(), t2.hashCode());
+        // t2 имеет тот же id, но может быть другим экземпляром
+        Task t2 = new Task("T", "D") {}; // тот же title/desc
+        t2.setId(1);
+
+        Task t3 = new Task("A", "B") {};
+        t3.setId(2);
+
+        assertEquals(t1, t2, "Задачи с одинаковым ID должны быть равны");
+        assertNotEquals(t1, t3, "Задачи с разными ID не должны быть равны");
+        assertEquals(t1.hashCode(), t2.hashCode(), "Хеш-коды задач с одинаковым ID должны совпадать");
     }
 }

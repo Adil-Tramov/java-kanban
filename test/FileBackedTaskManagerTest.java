@@ -43,17 +43,17 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         FileBackedTaskManager newManager = new FileBackedTaskManager(tempFile);
 
         Task loadedTask = newManager.getTaskById(task.getId());
-        assertNotNull(loadedTask);
+        assertNotNull(loadedTask, "Задача не загрузилась из файла");
         assertEquals("Saved Task", loadedTask.getTitle());
         assertEquals(LocalDateTime.of(2025, 10, 17, 14, 0), loadedTask.getStartTime());
         assertEquals(Duration.ofMinutes(45), loadedTask.getDuration());
 
         Epic loadedEpic = newManager.getEpicById(epic.getId());
-        assertNotNull(loadedEpic);
+        assertNotNull(loadedEpic, "Эпик не загрузился из файла");
         assertEquals(1, loadedEpic.getSubtaskIds().size());
 
         Subtask loadedSub = newManager.getSubtaskById(sub.getId());
-        assertNotNull(loadedSub);
+        assertNotNull(loadedSub, "Подзадача не загрузилась из файла");
         assertEquals(epic.getId(), loadedSub.getEpicId());
     }
 }
