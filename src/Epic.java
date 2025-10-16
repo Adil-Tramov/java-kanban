@@ -1,36 +1,53 @@
-import java.util.ArrayList;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Epic extends Task {
-    private final List<Integer> subtasksIds = new ArrayList<>();
+    private List<Integer> subtaskIds;
 
-    public Epic(String name, String description) {
-        super(name, description, Status.NEW);
+    public Epic(int id, String name, String description, TaskStatus status, List<Integer> subtaskIds) {
+        super(id, name, description, status, null, null);
+        this.subtaskIds = subtaskIds;
     }
 
-    public List<Integer> getSubtasksIds() {
-        return subtasksIds;
+    public List<Integer> getSubtaskIds() {
+        return subtaskIds;
     }
 
-    public void addSubtaskId(int id) {
-        subtasksIds.add(id);
+    public void setSubtaskIds(List<Integer> subtaskIds) {
+        this.subtaskIds = subtaskIds;
     }
 
-    public void removeSubtaskId(int id) {
-        subtasksIds.remove(Integer.valueOf(id));
+    public Duration getDuration(TaskManager manager) {
+        Duration total = Duration.ZERO;
+        for (Integer id : subtaskIds) {
+            Subtask subtask = manager.getSubtaskById(id);
+            if (subtask != null) {
+                total = total.plus(subtask.getDuration());
+            }
+        }
+        return total;
     }
 
-    public void clearSubtasks() {
-        subtasksIds.clear();
+    public LocalDateTime getStartTime(TaskManager manager) {
+        LocalDateTime earliest = null;
+        for (Integer id : subtaskIds) {
+            Subtask subtask = manager.getSubtaskById(id);
+            if (subtask != null && (earliest == null || subtask.getStartTime().isBefore(earliest))) {
+                earliest = subtask.getStartTime();
+            }
+        }
+        return earliest;
     }
 
-    @Override
-    public String toString() {
-        return "Epic{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", status=" + status +
-                ", subtasksIds=" + subtasksIds +
-                '}';
+    public LocalDateTime getEndTime(TaskManager manager) {
+        LocalDateTime latest = null;
+        for (Integer id : subtaskIds) {
+            Subtask subtask = manager.getSubtaskById(id);
+            if (subtask != null && (latest == null || subtask.getEndTime().isAfter(latest))) {
+                latest = subtask.getEndTime();
+            }
+        }
+        return latest;
     }
 }
