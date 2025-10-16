@@ -1,43 +1,59 @@
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        FileBackedTaskManager manager = new FileBackedTaskManager("tasks.csv");
+        TaskManager manager = new InMemoryTaskManager();
 
-        // Создаём задачи
-        Task task1 = new Task(1, "Task 1", "Description 1", TaskStatus.NEW, Duration.ofMinutes(30), LocalDateTime.now());
+        Task task1 = new Task("Купить продукты", "Сходить в магазин") {};
+        task1.setStartTime(LocalDateTime.of(2025, 10, 17, 10, 0));
+        task1.setDuration(Duration.ofMinutes(45));
         manager.createTask(task1);
 
-        Epic epic1 = new Epic(2, "Epic 1", "Epic Description", TaskStatus.NEW, new ArrayList<>());
-        manager.createEpic(epic1);
+        Epic epic = new Epic("Подготовка к отпуску", "Собрать документы, купить билеты и т.д.");
+        manager.createEpic(epic);
 
-        Subtask sub1 = new Subtask(3, "Sub 1", "Sub Description", TaskStatus.NEW, Duration.ofMinutes(20),
-                LocalDateTime.now().plusMinutes(30), 2);
+        Subtask sub1 = new Subtask("Купить билеты", "На самолёт в Сочи", epic.getId());
+        sub1.setStartTime(LocalDateTime.of(2025, 10, 17, 11, 0));
+        sub1.setDuration(Duration.ofMinutes(30));
         manager.createSubtask(sub1);
 
-        Subtask sub2 = new Subtask(4, "Sub 2", "Sub 2 Description", TaskStatus.NEW, Duration.ofMinutes(25),
-                LocalDateTime.now().plusMinutes(60), 2);
+        Subtask sub2 = new Subtask("Собрать чемодан", "Положить вещи", epic.getId());
+        sub2.setStartTime(LocalDateTime.of(2025, 10, 17, 12, 0));
+        sub2.setDuration(Duration.ofMinutes(60));
         manager.createSubtask(sub2);
 
-        // Выводим приоритетные задачи
-        System.out.println("Приоритетные задачи:");
-        for (Task t : manager.getPrioritizedTasks()) {
-            System.out.println(t.getName() + " - " + t.getStartTime());
+        System.out.println("=== Задачи по приоритету (по времени начала) ===");
+        List<Task> prioritized = manager.getPrioritizedTasks();
+        for (Task t : prioritized) {
+            System.out.println(t);
         }
 
-        // Проверяем пересечения
-        System.out.println("Пересекаются ли задачи? " + manager.isTaskCrossed(sub1));
+        Epic updatedEpic = manager.getEpicById(epic.getId());
+        System.out.println("\n=== Обновлённый эпик ===");
+        System.out.println("Старт: " + updatedEpic.getStartTime());
+        System.out.println("Окончание: " + updatedEpic.getEndTime());
+        System.out.println("Продолжительность (мин): " + (updatedEpic.getDuration() != null ? updatedEpic.getDuration().toMinutes() : "null"));
+        System.out.println("Статус: " + updatedEpic.getStatus());
 
-        // Статус эпика
-        System.out.println("Статус эпика: " + manager.calculateEpicStatus(2));
+        manager.getTaskById(task1.getId());
+        manager.getSubtaskById(sub1.getId());
+        manager.getEpicById(epic.getId());
 
-        // Добавляем ещё одну задачу, пересекающуюся с sub1
-        Task task2 = new Task(5, "Task 2", "Another task", TaskStatus.NEW, Duration.ofMinutes(15),
-                sub1.getStartTime().plusMinutes(10));
-        manager.createTask(task2);
+        System.out.println("\n=== История просмотров ===");
+        List<Task> history = manager.getHistory();
+        for (Task t : history) {
+            System.out.println(t.getTitle());
+        }
 
-        System.out.println("Пересекается ли task2 с другими? " + manager.isTaskCrossed(task2));
+        try {
+            Task bad = new Task("Невозможная задача", "Пересекается") {}; // ← исправлено
+            bad.setStartTime(LocalDateTime.of(2025, 10, 17, 10, 30));
+            bad.setDuration(Duration.ofMinutes(30));
+            manager.createTask(bad);
+        } catch (IllegalArgumentException e) {
+            System.out.println("\nОшибка: " + e.getMessage());
+        }
     }
 }

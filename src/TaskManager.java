@@ -1,52 +1,31 @@
 import java.util.List;
 
 public interface TaskManager {
+    List<Task> getTasks();
+    List<Epic> getEpics();
+    List<Subtask> getSubtasks();
 
-    List<Task> getPrioritizedTasks();
-
-    List<Task> getAllTasks();
-
-    void deleteAllTasks();
+    void createTask(Task task);
+    void createEpic(Epic epic);
+    void createSubtask(Subtask subtask);
 
     Task getTaskById(int id);
-
-    Task createTask(Task task);
-
-    Task updateTask(Task task);
-
-    void deleteTaskById(int id);
-
-    List<Subtask> getAllSubtasks();
-
-    void deleteAllSubtasks();
-
+    Epic getEpicById(int id);
     Subtask getSubtaskById(int id);
 
-    Subtask createSubtask(Subtask subtask);
+    void updateTask(Task task);
+    void updateEpic(Epic epic);
+    void updateSubtask(Subtask subtask);
 
-    Subtask updateSubtask(Subtask subtask);
-
+    void deleteTaskById(int id);
+    void deleteEpicById(int id);
     void deleteSubtaskById(int id);
 
-    List<Epic> getAllEpics();
-
+    void deleteAllTasks();
     void deleteAllEpics();
-
-    Epic getEpicById(int id);
-
-    Epic createEpic(Epic epic);
-
-    Epic updateEpic(Epic epic);
-
-    void deleteEpicById(int id);
+    void deleteAllSubtasks();
 
     List<Subtask> getEpicSubtasks(int epicId);
-
-    void addSubtaskToEpic(int epicId, int subtaskId);
-
-    TaskStatus calculateEpicStatus(int epicId);
-
-    boolean isTaskCrossed(Task task);
-
-    boolean isTaskCrossedWith(Task task, Task otherTask);
+    List<Task> getHistory();
+    List<Task> getPrioritizedTasks();
 }
