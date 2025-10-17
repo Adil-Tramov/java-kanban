@@ -1,65 +1,59 @@
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
+
 public class Main {
     public static void main(String[] args) {
-        InMemoryTaskManager taskManager = new InMemoryTaskManager();
+        TaskManager manager = new InMemoryTaskManager();
 
-        // 1. Две обычные задачи
-        var task1 = new Task("Купить молоко", "В магазине", Status.NEW);
-        var task2 = new Task("Позвонить маме", "Поздравить", Status.NEW);
-        taskManager.createTask(task1);
-        taskManager.createTask(task2);
+        Task task1 = new Task("Купить продукты", "Сходить в магазин") {};
+        task1.setStartTime(LocalDateTime.of(2025, 10, 17, 10, 0));
+        task1.setDuration(Duration.ofMinutes(45));
+        manager.createTask(task1);
 
-        // 2. Эпик с 3 подзадачами
-        var epic1 = new Epic("Подготовить отчёт", "Собрать данные");
-        taskManager.createEpic(epic1);
+        Epic epic = new Epic("Подготовка к отпуску", "Собрать документы, купить билеты и т.д.");
+        manager.createEpic(epic);
 
-        var sub1 = new Subtask("Собрать данные", "Из базы", Status.NEW, epic1.getId());
-        var sub2 = new Subtask("Построить графики", "В Excel", Status.NEW, epic1.getId());
-        var sub3 = new Subtask("Написать выводы", "По анализу", Status.NEW, epic1.getId());
-        taskManager.createSubtask(sub1);
-        taskManager.createSubtask(sub2);
-        taskManager.createSubtask(sub3);
+        Subtask sub1 = new Subtask("Купить билеты", "На самолёт в Сочи", epic.getId());
+        sub1.setStartTime(LocalDateTime.of(2025, 10, 17, 11, 0));
+        sub1.setDuration(Duration.ofMinutes(30));
+        manager.createSubtask(sub1);
 
-        // 3. Эпик без подзадач
-        var epic2 = new Epic("Пустой эпик", "Нет подзадач");
-        taskManager.createEpic(epic2);
+        Subtask sub2 = new Subtask("Собрать чемодан", "Положить вещи", epic.getId());
+        sub2.setStartTime(LocalDateTime.of(2025, 10, 17, 12, 0));
+        sub2.setDuration(Duration.ofMinutes(60));
+        manager.createSubtask(sub2);
 
-        System.out.println("=== Сценарий начался ===\n");
+        System.out.println("=== Задачи по приоритету (по времени начала) ===");
+        List<Task> prioritized = manager.getPrioritizedTasks();
+        for (Task t : prioritized) {
+            System.out.println(t);
+        }
 
-        // Запросы
-        taskManager.getTaskById(task1.getId());
-        printHistory(taskManager);
+        Epic updatedEpic = manager.getEpicById(epic.getId());
+        System.out.println("\n=== Обновлённый эпик ===");
+        System.out.println("Старт: " + updatedEpic.getStartTime());
+        System.out.println("Окончание: " + updatedEpic.getEndTime());
+        System.out.println("Продолжительность (мин): " + (updatedEpic.getDuration() != null ? updatedEpic.getDuration().toMinutes() : "null"));
+        System.out.println("Статус: " + updatedEpic.getStatus());
 
-        taskManager.getEpicById(epic1.getId());
-        printHistory(taskManager);
+        manager.getTaskById(task1.getId());
+        manager.getSubtaskById(sub1.getId());
+        manager.getEpicById(epic.getId());
 
-        taskManager.getTaskById(task2.getId());
-        printHistory(taskManager);
+        System.out.println("\n=== История просмотров ===");
+        List<Task> history = manager.getHistory();
+        for (Task t : history) {
+            System.out.println(t.getTitle());
+        }
 
-        taskManager.getSubtaskById(sub1.getId());
-        printHistory(taskManager);
-
-        // Повторный запрос — должен переместиться в конец
-        taskManager.getTaskById(task1.getId());
-        printHistory(taskManager);
-
-        // Удаление задачи
-        System.out.println("\n→ Удаляем задачу 'Позвонить маме'");
-        taskManager.deleteTaskById(task2.getId());
-        printHistory(taskManager);
-
-        // Удаление эпика с подзадачами
-        System.out.println("\n→ Удаляем эпик 'Подготовить отчёт' (и все подзадачи)");
-        taskManager.deleteEpicById(epic1.getId());
-        printHistory(taskManager);
-
-        System.out.println("\n=== Сценарий завершён ===");
-    }
-
-    private static void printHistory(InMemoryTaskManager tm) {
-        var history = tm.getHistory();
-        System.out.println("История (" + history.size() + "):");
-        for (var t : history) {
-            System.out.println("  " + t);
+        try {
+            Task bad = new Task("Невозможная задача", "Пересекается") {}; // ← исправлено
+            bad.setStartTime(LocalDateTime.of(2025, 10, 17, 10, 30));
+            bad.setDuration(Duration.ofMinutes(30));
+            manager.createTask(bad);
+        } catch (IllegalArgumentException e) {
+            System.out.println("\nОшибка: " + e.getMessage());
         }
     }
 }
