@@ -1,4 +1,6 @@
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -23,8 +25,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             for (int i = 1; i < lines.size(); i++) {
                 String line = lines.get(i);
                 if (line.trim().isEmpty()) continue;
-                String[] parts = line.split(",", -1);
-                if (parts.length < 8) continue;
+                String[] parts = line.split(",", -1); // -1 чтобы сохранить пустые поля после последней запятой
+                if (parts.length < 8) continue; // Должно быть ровно 8 полей
 
                 int id = Integer.parseInt(parts[0]);
                 String type = parts[1];
