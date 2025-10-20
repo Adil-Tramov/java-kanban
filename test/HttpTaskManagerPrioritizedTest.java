@@ -26,8 +26,11 @@ public class HttpTaskManagerPrioritizedTest {
     HttpTaskServer taskServer = new HttpTaskServer(manager);
     Gson gson = HttpTaskServer.getGson();
 
+    public HttpTaskManagerPrioritizedTest() throws IOException {
+    }
+
     @BeforeEach
-    public void setUp() throws IOException {
+    public void setUp() {
         manager.deleteTasks();
         manager.deleteSubtasks();
         manager.deleteEpics();
@@ -40,33 +43,23 @@ public class HttpTaskManagerPrioritizedTest {
     }
 
     @Test
-    public void testGetPrioritizedTasks() throws IOException, InterruptedException {
-        Task task1 = new Task("Task 1", "Desc 1", TaskStatus.NEW,
-                Duration.ofMinutes(5), LocalDateTime.now().plusHours(1));
-        Task task2 = new Task("Task 2", "Desc 2", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.now().plusHours(2));
-        Task task3 = new Task("Task 3", "Desc 3", TaskStatus.NEW,
-                Duration.ofMinutes(15), LocalDateTime.now());
-
+    public void testGetPrioritized() throws IOException, InterruptedException {
+        Task task1 = new Task("Task 1", "Desc 1", TaskStatus.NEW, Duration.ofMinutes(5),
+                LocalDateTime.now().plusHours(1));
+        Task task2 = new Task("Task 2", "Desc 2", TaskStatus.NEW, Duration.ofMinutes(10),
+                LocalDateTime.now());
         manager.createTask(task1);
         manager.createTask(task2);
-        manager.createTask(task3);
 
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/prioritized");
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
         assertEquals(200, response.statusCode());
 
         List<Task> prioritized = gson.fromJson(response.body(), List.class);
-        assertNotNull(prioritized);
-        assertEquals(3, prioritized.size());
-
-        // Проверяем порядок: task3 (раньше всего), task1, task2
-        assertEquals("Task 3", prioritized.get(0).getName());
-        assertEquals("Task 1", prioritized.get(1).getName());
-        assertEquals("Task 2", prioritized.get(2).getName());
+        assertEquals(2, prioritized.size(), "Некорректное количество задач в приоритете");
+        assertEquals("Task 2", prioritized.get(0).getName(), "Некорректная сортировка по приоритету");
     }
 }

@@ -28,8 +28,11 @@ public class HttpTaskManagerHistoryTest {
     HttpTaskServer taskServer = new HttpTaskServer(manager);
     Gson gson = HttpTaskServer.getGson();
 
+    public HttpTaskManagerHistoryTest() throws IOException {
+    }
+
     @BeforeEach
-    public void setUp() throws IOException {
+    public void setUp() {
         manager.deleteTasks();
         manager.deleteSubtasks();
         manager.deleteEpics();
@@ -45,7 +48,7 @@ public class HttpTaskManagerHistoryTest {
     public void testGetHistory() throws IOException, InterruptedException {
         Task task = new Task("Task 1", "Desc 1", TaskStatus.NEW, Duration.ofMinutes(5),
                 LocalDateTime.now());
-        Epic epic = new Epic("Epic 1", "Desc 1");
+        Epic epic = new Epic("Epic 1", "Desc 1", TaskStatus.NEW);
         Subtask subtask = new Subtask("Subtask 1", "Desc 1", TaskStatus.NEW,
                 Duration.ofMinutes(10), LocalDateTime.now(), epic.getId());
 
@@ -53,11 +56,10 @@ public class HttpTaskManagerHistoryTest {
         manager.createEpic(epic);
         manager.createSubtask(subtask);
 
-        // Вызываем GET для добавления в историю
         HttpClient client = HttpClient.newHttpClient();
-        URI url1 = URI.create("http://localhost:8080/tasks/" + task.getId());
-        HttpRequest request1 = HttpRequest.newBuilder().uri(url1).GET().build();
-        client.send(request1, HttpResponse.BodyHandlers.ofString());
+        URI url = URI.create("http://localhost:8080/tasks/" + task.getId());
+        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
+        client.send(request, HttpResponse.BodyHandlers.ofString());
 
         URI url2 = URI.create("http://localhost:8080/epics/" + epic.getId());
         HttpRequest request2 = HttpRequest.newBuilder().uri(url2).GET().build();
@@ -67,15 +69,13 @@ public class HttpTaskManagerHistoryTest {
         HttpRequest request3 = HttpRequest.newBuilder().uri(url3).GET().build();
         client.send(request3, HttpResponse.BodyHandlers.ofString());
 
-        URI urlHistory = URI.create("http://localhost:8080/history");
-        HttpRequest requestHistory = HttpRequest.newBuilder().uri(urlHistory).GET().build();
+        URI historyUrl = URI.create("http://localhost:8080/history");
+        HttpRequest historyRequest = HttpRequest.newBuilder().uri(historyUrl).GET().build();
 
-        HttpResponse<String> response = client.send(requestHistory, HttpResponse.BodyHandlers.ofString());
-
+        HttpResponse<String> response = client.send(historyRequest, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
 
         List<Task> history = gson.fromJson(response.body(), List.class);
-        assertNotNull(history);
-        assertEquals(3, history.size()); // task, epic, subtask
+        assertEquals(3, history.size(), "Некорректное количество задач в истории");
     }
 }
