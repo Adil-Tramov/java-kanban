@@ -2,10 +2,10 @@ package ru.yandex.javacourse.schedule.http.handler;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
-import ru.yandex.javacourse.schedule.exceptions.IntersectionException;
-import ru.yandex.javacourse.schedule.exceptions.NotFoundException;
-import ru.yandex.javacourse.schedule.tasks.TaskManager;
-import ru.yandex.javacourse.schedule.tasks.Subtask;
+import ru.yandex.javacourse.schedule.http.exceptions.IntersectionException;
+import ru.yandex.javacourse.schedule.http.exceptions.NotFoundException;
+import ru.yandex.javacourse.schedule.http.tasks.TaskManager;
+import ru.yandex.javacourse.schedule.http.tasks.Task;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,11 +13,11 @@ import java.io.Reader;
 import java.net.URI;
 import java.util.List;
 
-public class SubtaskHandler extends BaseHttpHandler {
+public class TaskHandler extends BaseHttpHandler {
     private final TaskManager manager;
     private final Gson gson;
 
-    public SubtaskHandler(TaskManager manager, Gson gson) {
+    public TaskHandler(TaskManager manager, Gson gson) {
         this.manager = manager;
         this.gson = gson;
     }
@@ -52,32 +52,18 @@ public class SubtaskHandler extends BaseHttpHandler {
     }
 
     private void handleGet(String path, HttpExchange exchange) {
-        if ("/subtasks".equals(path)) {
-            List<Subtask> subtasks = manager.getSubtasks();
+        if ("/tasks".equals(path)) {
+            List<Task> tasks = manager.getTasks();
             try {
-                sendText(exchange, gson.toJson(subtasks));
+                sendText(exchange, gson.toJson(tasks));
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else if (path.matches("/subtasks/\\d+")) {
+        } else if (path.matches("/tasks/\\d+")) {
             int id = extractIdFromPath(path);
             try {
-                Subtask subtask = manager.getSubtaskById(id);
-                sendText(exchange, gson.toJson(subtask));
-            } catch (NotFoundException e) {
-                try {
-                    sendNotFound(exchange, e.getMessage());
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else if (path.matches("/subtasks/\\d+/subtasks")) {
-            int id = extractIdFromPath(path);
-            try {
-                List<Subtask> subtasks = manager.getEpicSubtasks(id);
-                sendText(exchange, gson.toJson(subtasks));
+                Task task = manager.getTaskById(id);
+                sendText(exchange, gson.toJson(task));
             } catch (NotFoundException e) {
                 try {
                     sendNotFound(exchange, e.getMessage());
@@ -98,23 +84,23 @@ public class SubtaskHandler extends BaseHttpHandler {
 
     private void handlePost(HttpExchange exchange) {
         try (Reader reader = new InputStreamReader(exchange.getRequestBody())) {
-            Subtask subtask = gson.fromJson(reader, Subtask.class);
-            if (subtask == null) {
+            Task task = gson.fromJson(reader, Task.class);
+            if (task == null) {
                 sendNotFound(exchange, "Тело запроса пустое или некорректное");
                 return;
             }
 
-            if (subtask.getId() == 0) {
+            if (task.getId() == 0) {
                 try {
-                    manager.createSubtask(subtask);
-                    sendCreated(exchange, gson.toJson(subtask));
+                    manager.createTask(task);
+                    sendCreated(exchange, gson.toJson(task));
                 } catch (IntersectionException e) {
                     sendHasIntersections(exchange, e.getMessage());
                 }
             } else {
                 try {
-                    manager.updateSubtask(subtask);
-                    sendText(exchange, gson.toJson(subtask));
+                    manager.updateTask(task);
+                    sendText(exchange, gson.toJson(task));
                 } catch (NotFoundException e) {
                     sendNotFound(exchange, e.getMessage());
                 } catch (IntersectionException e) {
@@ -139,11 +125,11 @@ public class SubtaskHandler extends BaseHttpHandler {
     }
 
     private void handleDelete(String path, HttpExchange exchange) {
-        if (path.matches("/subtasks/\\d+")) {
+        if (path.matches("/tasks/\\d+")) {
             int id = extractIdFromPath(path);
             try {
-                manager.deleteSubtask(id);
-                sendText(exchange, "Подзадача удалена");
+                manager.deleteTask(id);
+                sendText(exchange, "Задача удалена");
             } catch (NotFoundException e) {
                 try {
                     sendNotFound(exchange, e.getMessage());

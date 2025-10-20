@@ -2,8 +2,8 @@ package ru.yandex.javacourse.schedule.http.handler;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
-import ru.yandex.javacourse.schedule.tasks.TaskManager;
-import ru.yandex.javacourse.schedule.tasks.Task;
+import ru.yandex.javacourse.schedule.http.tasks.TaskManager;
+import ru.yandex.javacourse.schedule.http.tasks.Task;
 
 import java.io.IOException;
 import java.util.List;

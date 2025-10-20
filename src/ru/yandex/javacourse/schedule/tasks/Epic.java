@@ -1,4 +1,4 @@
-package ru.yandex.javacourse.schedule.tasks;
+package ru.yandex.javacourse.schedule.http.tasks;
 
 import java.util.ArrayList;
 import java.util.List;

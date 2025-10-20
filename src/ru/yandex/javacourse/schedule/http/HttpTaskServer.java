@@ -8,8 +8,8 @@ import ru.yandex.javacourse.schedule.http.handler.HistoryHandler;
 import ru.yandex.javacourse.schedule.http.handler.PrioritizedHandler;
 import ru.yandex.javacourse.schedule.http.handler.SubtaskHandler;
 import ru.yandex.javacourse.schedule.http.handler.TaskHandler;
-import ru.yandex.javacourse.schedule.managers.Managers;
-import ru.yandex.javacourse.schedule.tasks.TaskManager;
+import ru.yandex.javacourse.schedule.http.managers.Managers;
+import ru.yandex.javacourse.schedule.http.tasks.TaskManager;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

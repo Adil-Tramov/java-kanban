@@ -2,10 +2,10 @@ package ru.yandex.javacourse.schedule.http.handler;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
-import ru.yandex.javacourse.schedule.exceptions.NotFoundException;
-import ru.yandex.javacourse.schedule.tasks.TaskManager;
-import ru.yandex.javacourse.schedule.tasks.Epic;
-import ru.yandex.javacourse.schedule.tasks.Subtask;
+import ru.yandex.javacourse.schedule.http.exceptions.IntersectionException;
+import ru.yandex.javacourse.schedule.http.exceptions.NotFoundException;
+import ru.yandex.javacourse.schedule.http.tasks.TaskManager;
+import ru.yandex.javacourse.schedule.http.tasks.Subtask;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,11 +13,11 @@ import java.io.Reader;
 import java.net.URI;
 import java.util.List;
 
-public class EpicHandler extends BaseHttpHandler {
+public class SubtaskHandler extends BaseHttpHandler {
     private final TaskManager manager;
     private final Gson gson;
 
-    public EpicHandler(TaskManager manager, Gson gson) {
+    public SubtaskHandler(TaskManager manager, Gson gson) {
         this.manager = manager;
         this.gson = gson;
     }
@@ -52,18 +52,18 @@ public class EpicHandler extends BaseHttpHandler {
     }
 
     private void handleGet(String path, HttpExchange exchange) {
-        if ("/epics".equals(path)) {
-            List<Epic> epics = manager.getEpics();
+        if ("/subtasks".equals(path)) {
+            List<Subtask> subtasks = manager.getSubtasks();
             try {
-                sendText(exchange, gson.toJson(epics));
+                sendText(exchange, gson.toJson(subtasks));
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else if (path.matches("/epics/\\d+")) {
+        } else if (path.matches("/subtasks/\\d+")) {
             int id = extractIdFromPath(path);
             try {
-                Epic epic = manager.getEpicById(id);
-                sendText(exchange, gson.toJson(epic));
+                Subtask subtask = manager.getSubtaskById(id);
+                sendText(exchange, gson.toJson(subtask));
             } catch (NotFoundException e) {
                 try {
                     sendNotFound(exchange, e.getMessage());
@@ -73,7 +73,7 @@ public class EpicHandler extends BaseHttpHandler {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else if (path.matches("/epics/\\d+/subtasks")) {
+        } else if (path.matches("/subtasks/\\d+/subtasks")) {
             int id = extractIdFromPath(path);
             try {
                 List<Subtask> subtasks = manager.getEpicSubtasks(id);
@@ -98,21 +98,27 @@ public class EpicHandler extends BaseHttpHandler {
 
     private void handlePost(HttpExchange exchange) {
         try (Reader reader = new InputStreamReader(exchange.getRequestBody())) {
-            Epic epic = gson.fromJson(reader, Epic.class);
-            if (epic == null) {
+            Subtask subtask = gson.fromJson(reader, Subtask.class);
+            if (subtask == null) {
                 sendNotFound(exchange, "Тело запроса пустое или некорректное");
                 return;
             }
 
-            if (epic.getId() == 0) {
-                manager.createEpic(epic);
-                sendCreated(exchange, gson.toJson(epic));
+            if (subtask.getId() == 0) {
+                try {
+                    manager.createSubtask(subtask);
+                    sendCreated(exchange, gson.toJson(subtask));
+                } catch (IntersectionException e) {
+                    sendHasIntersections(exchange, e.getMessage());
+                }
             } else {
                 try {
-                    manager.updateEpic(epic);
-                    sendText(exchange, gson.toJson(epic));
+                    manager.updateSubtask(subtask);
+                    sendText(exchange, gson.toJson(subtask));
                 } catch (NotFoundException e) {
                     sendNotFound(exchange, e.getMessage());
+                } catch (IntersectionException e) {
+                    sendHasIntersections(exchange, e.getMessage());
                 }
             }
         } catch (IOException e) {
@@ -123,15 +129,21 @@ public class EpicHandler extends BaseHttpHandler {
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
+        } catch (IntersectionException e) {
+            try {
+                sendHasIntersections(exchange, e.getMessage());
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
         }
     }
 
     private void handleDelete(String path, HttpExchange exchange) {
-        if (path.matches("/epics/\\d+")) {
+        if (path.matches("/subtasks/\\d+")) {
             int id = extractIdFromPath(path);
             try {
-                manager.deleteEpic(id);
-                sendText(exchange, "Эпик удален");
+                manager.deleteSubtask(id);
+                sendText(exchange, "Подзадача удалена");
             } catch (NotFoundException e) {
                 try {
                     sendNotFound(exchange, e.getMessage());

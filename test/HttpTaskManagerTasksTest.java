@@ -4,10 +4,10 @@ import com.google.gson.Gson;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.javacourse.schedule.managers.InMemoryTaskManager;
-import ru.yandex.javacourse.schedule.tasks.Task;
-import ru.yandex.javacourse.schedule.tasks.TaskManager;
-import ru.yandex.javacourse.schedule.tasks.TaskStatus;
+import ru.yandex.javacourse.schedule.http.managers.InMemoryTaskManager;
+import ru.yandex.javacourse.schedule.http.tasks.Task;
+import ru.yandex.javacourse.schedule.http.tasks.TaskManager;
+import ru.yandex.javacourse.schedule.http.tasks.TaskStatus;
 
 import java.io.IOException;
 import java.net.URI;

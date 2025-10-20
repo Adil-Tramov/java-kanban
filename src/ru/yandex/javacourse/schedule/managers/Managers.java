@@ -1,6 +1,6 @@
-package ru.yandex.javacourse.schedule.managers;
+package ru.yandex.javacourse.schedule.http.managers;
 
-import ru.yandex.javacourse.schedule.tasks.TaskManager;
+import ru.yandex.javacourse.schedule.http.tasks.TaskManager;
 
 public class Managers {
     public static TaskManager getDefault() {

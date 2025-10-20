@@ -1,6 +1,6 @@
-package ru.yandex.javacourse.schedule.managers;
+package ru.yandex.javacourse.schedule.http.managers;
 
-import ru.yandex.javacourse.schedule.tasks.Task;
+import ru.yandex.javacourse.schedule.http.tasks.Task;
 
 import java.util.List;
 
