@@ -55,7 +55,7 @@ public class HttpTaskManagerTasksTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(HttpRequest.BodyPublishers.ofString(taskJson)).build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(200, response.statusCode());
+        assertEquals(201, response.statusCode()); // Изменено с 200 на 201
 
         List<Task> tasksFromManager = manager.getTasks();
 

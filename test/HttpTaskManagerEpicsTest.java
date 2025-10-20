@@ -51,7 +51,7 @@ public class HttpTaskManagerEpicsTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(HttpRequest.BodyPublishers.ofString(epicJson)).build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(200, response.statusCode());
+        assertEquals(201, response.statusCode()); // Изменено с 200 на 201
 
         List<Epic> epicsFromManager = manager.getEpics();
         assertEquals(1, epicsFromManager.size(), "Некорректное количество эпиков");

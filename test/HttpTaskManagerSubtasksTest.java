@@ -50,7 +50,7 @@ public class HttpTaskManagerSubtasksTest {
         manager.createEpic(epic);
 
         Subtask subtask = new Subtask("Subtask 1", "Desc 1", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.now(), epic.getId());
+                Duration.ofMinutes(10), LocalDateTime.now().plusHours(1), epic.getId());
         String subtaskJson = gson.toJson(subtask);
 
         HttpClient client = HttpClient.newHttpClient();
@@ -58,7 +58,7 @@ public class HttpTaskManagerSubtasksTest {
         HttpRequest request = HttpRequest.newBuilder().uri(url).POST(HttpRequest.BodyPublishers.ofString(subtaskJson)).build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        assertEquals(200, response.statusCode());
+        assertEquals(201, response.statusCode()); // Изменено с 200 на 201
 
         List<Subtask> subtasksFromManager = manager.getSubtasks();
         assertEquals(1, subtasksFromManager.size(), "Некорректное количество подзадач");
