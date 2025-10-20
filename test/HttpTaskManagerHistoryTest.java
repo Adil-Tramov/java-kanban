@@ -51,7 +51,7 @@ public class HttpTaskManagerHistoryTest {
                 LocalDateTime.now());
         Epic epic = new Epic("Epic 1", "Desc 1", TaskStatus.NEW);
         Subtask subtask = new Subtask("Subtask 1", "Desc 1", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.now(), epic.getId());
+                Duration.ofMinutes(10), LocalDateTime.now().plusHours(1), epic.getId()); // Добавил +1 час
 
         manager.createTask(task);
         manager.createEpic(epic);

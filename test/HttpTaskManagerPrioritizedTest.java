@@ -46,9 +46,9 @@ public class HttpTaskManagerPrioritizedTest {
     @Test
     public void testGetPrioritized() throws IOException, InterruptedException {
         Task task1 = new Task("Task 1", "Desc 1", TaskStatus.NEW, Duration.ofMinutes(5),
-                LocalDateTime.now().plusHours(1));
+                LocalDateTime.now().plusHours(2)); // Разные времена
         Task task2 = new Task("Task 2", "Desc 2", TaskStatus.NEW, Duration.ofMinutes(10),
-                LocalDateTime.now());
+                LocalDateTime.now().plusHours(1));
         manager.createTask(task1);
         manager.createTask(task2);
 
@@ -59,7 +59,9 @@ public class HttpTaskManagerPrioritizedTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
 
-        List<Task> prioritized = gson.fromJson(response.body(), List.class);
+        Type taskListType = new TypeToken<List<Task>>(){}.getType();
+        List<Task> prioritized = gson.fromJson(response.body(), taskListType);
+
         assertEquals(2, prioritized.size(), "Некорректное количество задач в приоритете");
         assertEquals("Task 2", prioritized.get(0).getName(), "Некорректная сортировка по приоритету");
     }
