@@ -1,3 +1,7 @@
+package ru.yandex.javacourse.schedule.http.managers;
+
+import ru.yandex.javacourse.schedule.http.tasks.Task;
+
 import java.util.List;
 
 public interface HistoryManager {
