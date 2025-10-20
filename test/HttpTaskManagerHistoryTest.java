@@ -4,12 +4,12 @@ import com.google.gson.Gson;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import main.java.ru.yandex.javacourse.schedule.http.managers.InMemoryTaskManager;
+import ru.yandex.javacourse.schedule.managers.InMemoryTaskManager;
 import ru.yandex.javacourse.schedule.managers.TaskManager;
-import main.java.ru.yandex.javacourse.schedule.http.tasks.Epic;
-import main.java.ru.yandex.javacourse.schedule.http.tasks.Subtask;
-import main.java.ru.yandex.javacourse.schedule.http.tasks.Task;
-import main.java.ru.yandex.javacourse.schedule.http.tasks.TaskStatus;
+import ru.yandex.javacourse.schedule.tasks.Epic;
+import ru.yandex.javacourse.schedule.tasks.Subtask;
+import ru.yandex.javacourse.schedule.tasks.Task;
+import ru.yandex.javacourse.schedule.tasks.TaskStatus;
 
 import java.io.IOException;
 import java.net.URI;
@@ -21,7 +21,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class HttpTaskManagerHistoryTest {
 
