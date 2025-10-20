@@ -108,7 +108,6 @@ public class InMemoryTaskManager implements TaskManager {
         epics.put(epic.getId(), epic);
     }
 
-    // Обновление
     @Override
     public void updateTask(Task task) throws IntersectionException {
         if (!tasks.containsKey(task.getId())) {
@@ -177,6 +176,49 @@ public class InMemoryTaskManager implements TaskManager {
             }
             historyManager.remove(id);
         }
+    }
+
+    // ДОБАВЛЕННЫЕ МЕТОДЫ
+    @Override
+    public void deleteTasks() {
+        for (Integer id : tasks.keySet()) {
+            historyManager.remove(id);
+            removeFromPrioritized(id);
+        }
+        tasks.clear();
+    }
+
+    @Override
+    public void deleteSubtasks() {
+        for (Integer id : subtasks.keySet()) {
+            historyManager.remove(id);
+            removeFromPrioritized(id);
+        }
+        subtasks.clear();
+
+        // Обновляем эпики
+        for (Epic epic : epics.values()) {
+            epic.getSubtaskIds().clear();
+            updateEpicStatus(epic);
+        }
+    }
+
+    @Override
+    public void deleteEpics() {
+        for (Integer id : epics.keySet()) {
+            historyManager.remove(id);
+        }
+
+        // Удаляем подзадачи эпиков
+        for (Epic epic : epics.values()) {
+            for (Integer subId : epic.getSubtaskIds()) {
+                subtasks.remove(subId);
+                historyManager.remove(subId);
+                removeFromPrioritized(subId);
+            }
+        }
+
+        epics.clear();
     }
 
     @Override
