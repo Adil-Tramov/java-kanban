@@ -5,8 +5,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.javacourse.schedule.managers.InMemoryTaskManager;
-import ru.yandex.javacourse.schedule.managers.TaskManager;
 import ru.yandex.javacourse.schedule.tasks.Epic;
+import ru.yandex.javacourse.schedule.tasks.TaskManager;
 import ru.yandex.javacourse.schedule.tasks.TaskStatus;
 
 import java.io.IOException;
