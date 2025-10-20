@@ -19,6 +19,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,17 +48,20 @@ public class HttpTaskManagerHistoryTest {
 
     @Test
     public void testGetHistory() throws IOException, InterruptedException {
+        // Создаем задачи с разными временами, чтобы избежать пересечений
         Task task = new Task("Task 1", "Desc 1", TaskStatus.NEW, Duration.ofMinutes(5),
                 LocalDateTime.now());
         Epic epic = new Epic("Epic 1", "Desc 1", TaskStatus.NEW);
         Subtask subtask = new Subtask("Subtask 1", "Desc 1", TaskStatus.NEW,
-                Duration.ofMinutes(10), LocalDateTime.now().plusHours(1), epic.getId()); // Добавил +1 час
+                Duration.ofMinutes(10), LocalDateTime.now().plusHours(1), epic.getId());
 
         manager.createTask(task);
         manager.createEpic(epic);
         manager.createSubtask(subtask);
 
         HttpClient client = HttpClient.newHttpClient();
+
+        // Получаем задачи, чтобы добавить их в историю
         URI url = URI.create("http://localhost:8080/tasks/" + task.getId());
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -70,13 +74,17 @@ public class HttpTaskManagerHistoryTest {
         HttpRequest request3 = HttpRequest.newBuilder().uri(url3).GET().build();
         client.send(request3, HttpResponse.BodyHandlers.ofString());
 
+        // Получаем историю
         URI historyUrl = URI.create("http://localhost:8080/history");
         HttpRequest historyRequest = HttpRequest.newBuilder().uri(historyUrl).GET().build();
 
         HttpResponse<String> response = client.send(historyRequest, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
 
-        List<Task> history = gson.fromJson(response.body(), List.class);
+        // Исправленная десериализация без предупреждений
+        Task[] historyArray = gson.fromJson(response.body(), Task[].class);
+        List<Task> history = Arrays.asList(historyArray);
+
         assertEquals(3, history.size(), "Некорректное количество задач в истории");
     }
 }
