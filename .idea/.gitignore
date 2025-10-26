@@ -1,3 +1,20 @@
-# Default ignored files
-/shelf/
-/workspace.xml
+# Maven
+target/
+
+# IntelliJ
+.idea/
+*.iml
+
+# Logs
+logs/
+*.log
+
+# Environment variables
+.env
+
+# Gradle
+.gradle/
+
+# OS
+.DS_Store
+Thumbs.db
