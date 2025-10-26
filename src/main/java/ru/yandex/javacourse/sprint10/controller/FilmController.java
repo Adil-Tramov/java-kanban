@@ -11,6 +11,7 @@ import ru.yandex.javacourse.sprint10.exception.ValidationException;
 import ru.yandex.javacourse.sprint10.model.Film;
 
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,11 +21,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class FilmController {
 
+    private static final LocalDate MIN_RELEASE_DATE = LocalDate.of(1895, 12, 28);
     private final List<Film> films = new ArrayList<>();
     private final AtomicInteger idGenerator = new AtomicInteger(1);
 
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) {
+        if (film.getReleaseDate().isBefore(MIN_RELEASE_DATE)) {
+            throw new ValidationException("Дата релиза — не раньше 28 декабря 1895 года");
+        }
         film.setId(idGenerator.getAndIncrement());
         films.add(film);
         log.info("Добавлен фильм: {}", film.getName());
@@ -33,6 +38,9 @@ public class FilmController {
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
+        if (film.getReleaseDate().isBefore(MIN_RELEASE_DATE)) {
+            throw new ValidationException("Дата релиза — не раньше 28 декабря 1895 года");
+        }
         for (int i = 0; i < films.size(); i++) {
             if (films.get(i).getId().equals(film.getId())) {
                 films.set(i, film);
