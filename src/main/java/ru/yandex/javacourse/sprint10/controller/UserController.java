@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.javacourse.sprint10.exception.ValidationException;
 import ru.yandex.javacourse.sprint10.model.User;
-
 import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
